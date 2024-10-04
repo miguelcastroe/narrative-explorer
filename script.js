@@ -21,16 +21,11 @@ const analyzeText = async () => {
             })
         });
 
-        // Check if the response is okay (status 200-299), otherwise throw an error
-        if (!response.ok) {
-            const errorDetails = await response.json();
-            console.error('Error Details:', errorDetails);
-            throw new Error(`API returned error with status ${response.status}: ${errorDetails.error || errorDetails}`);
-        }
-
+        // Log the entire response for debugging
         const data = await response.json();
+        console.log('API Response:', data);
 
-        // Check if the expected fields are present in the response
+        // Check if the response contains the expected data
         if (!data || !data.generated_text) {
             throw new Error("Unexpected API response format.");
         }
@@ -45,17 +40,4 @@ const analyzeText = async () => {
         console.error('Error:', error); // This will print the full error to the console
         document.getElementById('insights').innerText = `Error analyzing the text: ${error.message}`;
     }
-};
-
-// Helper functions to extract insights and prompts
-const extractInsights = (text) => {
-    const insightsRegex = /Insights:(.*)Prompts:/s;
-    const insightsMatch = text.match(insightsRegex);
-    return insightsMatch ? insightsMatch[1].trim() : 'No insights found.';
-};
-
-const extractPrompts = (text) => {
-    const promptsRegex = /Prompts:(.*)/s;
-    const promptsMatch = text.match(promptsRegex);
-    return promptsMatch ? promptsMatch[1].trim() : 'No prompts found.';
 };
