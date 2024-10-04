@@ -13,7 +13,7 @@ const analyzeText = async () => {
         const response = await fetch('https://api.cohere.ai/generate', {
             method: 'POST',
             headers: {
-                'Authorization': 'd1eFNqcaFF9fLJLceZoqMfDx6lNvKOfVXrlkLsUN',
+                'Authorization': 'Bearer d1eFNqcaFF9fLJLceZoqMfDx6lNvKOfVXrlkLsUN', // API key included
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -24,7 +24,18 @@ const analyzeText = async () => {
             })
         });
 
+        // Check if the response is okay (status 200-299), otherwise throw an error
+        if (!response.ok) {
+            throw new Error(`API returned error with status ${response.status}`);
+        }
+
         const data = await response.json();
+
+        // Check if the expected fields are present in the response
+        if (!data.generations || !data.generations[0]) {
+            throw new Error("Unexpected API response format.");
+        }
+
         const result = data.generations[0].text;
 
         // Display the result
@@ -32,8 +43,8 @@ const analyzeText = async () => {
         document.getElementById('prompts').innerText = "Creative Prompts: " + extractPrompts(result);
         
     } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('insights').innerText = 'Error analyzing the text.';
+        console.error('Error:', error); // This will print the full error to the console
+        document.getElementById('insights').innerText = `Error analyzing the text: ${error.message}`;
     }
 };
 
